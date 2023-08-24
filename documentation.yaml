@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: Node Rest API Doc
+  description: Node Rest API Documentation
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3001/api
+    description: Development server
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: User
+    description: Operations related to user accounts
+
+paths:
+  # User API Endpoint
+  /user/isloggedin:
+    get:
+      tags:
+        - User
+      security:
+        - JWTAuth: []
+      summary: Checks if a user is already logged in
+      responses:
+        '200':
+          description: Predicate for user login status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isLoggedIn:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Logged In"
+                  user:
+                    $ref: "#/components/schemas/User"
+        
+# model definitions
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example value: Bearer SECRET'
+
+    JWTAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      bearerFormat: JWT
+      description: 'JWT authentication. Get token by logging in'
+  schemas:
+    User:
+      type: object
+      properties: 
+        _id:
+          type: string
+          format: mongodb-id
+        enrolledEventID:
+          type: array
+          items:
+            type: string
+        enrolledId:
+          type: array
+          items:
+            type: string
+        isOrganiser:
+          type: boolean
+        isReviewer:
+          type: boolean
+        isParticipant:
+          type: boolean
+        fullname:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+            
+
+
