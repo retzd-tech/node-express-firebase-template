@@ -2,8 +2,10 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 const fs = require('fs');
-
 const Logger = require('bunyan-logger'); 
+
+const operation = require('./connector');
+
 // With options.
 const bunyan = new Logger({
   name: 'myLog',
@@ -26,6 +28,7 @@ app.use(cors(corsOptions));
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const { log } = require('console');
 const swaggerDocument = YAML.load('./documentation.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -38,7 +41,7 @@ app.listen(3000, () => {
 })
 
 const myLogger = function (req, res, next) {
-  console.log('LOGGED')
+  console.log('LOGGEAD')
   bunyan.info('middlware')
   next()
 }
@@ -58,11 +61,13 @@ function error(err, req, res, next) {
   res.send('Internal Server Error');
 }
 
-app.get('/', function (req, res) {
+app.get('/', async function (req, res) {
   // Caught and passed down to the errorHandler middleware
   // throw new Error('something broke!');
+  const uplaodedImage = await operation.getAllUploadedImagesURL();
+  log(uplaodedImage);
   res.status(200);
-  res.send('OK');
+  res.send(uplaodedImage);
 });
 
 // app.get('/next', function(req, res, next){
